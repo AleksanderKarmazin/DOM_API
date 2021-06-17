@@ -31,10 +31,108 @@ const tasks = [
   },
 ];
 
-(function(arrOfTasks) {
+(function (arrOfTasks) {
   const objOfTasks = arrOfTasks.reduce((acc, task) => {
     acc[task._id] = task;
     return acc
   }, {});
-  console.log(objOfTasks)
+  // console.log(objOfTasks)
+
+
+  // Elements UI 
+  const listContainer = document.querySelector(
+    '.tasks-list-section .list-group',
+  )
+
+  const form = document.forms['addTask']
+  const inputTitle = form.elements['title']
+  const inputBody = form.elements['body']
+  
+  console.log(inputTitle, inputBody);
+  
+  // Events
+  form.addEventListener('submit', onFormSubmitHandler )
+  renderAllTasks(objOfTasks)
+
+ 
+  function renderAllTasks(taskList) {
+    if (!taskList) {
+      console.error("Передайте список");
+      return
+    }
+    // Создадим фрагмент 
+    const fragment = document.createDocumentFragment()
+    // Принмает объект => возвращает массив
+    Object.values(taskList).forEach(task => {
+      const li = listItemTemplate(task)
+      fragment.appendChild(li)
+    })
+    listContainer.appendChild(fragment)
+  }
+
+  function listItemTemplate({ _id, title, body } = {}) {
+    const li = document.createElement("li")
+    li.classList.add(
+      'list-group-item',
+      'd-flex',
+      'align-items-center',
+      'flex-wrap',
+      'mt-2'
+    )
+    // console.log(li);
+    const span = document.createElement("span")
+    span.textContent = title
+    span.style.fontWeight = 'bold'
+
+    const deleteBtn = document.createElement("button")
+    deleteBtn.textContent = "Delete task"
+    deleteBtn.classList.add(
+      'btn',
+      'btn-danger',
+      'ml-auto',
+      'delete-btn'
+    )
+    const article = document.createElement("p")
+    article.textContent = body
+    article.classList.add(
+      'mt-2',
+      'w-100'
+    )
+
+    li.appendChild(span)
+    li.appendChild(deleteBtn)
+    li.appendChild(article)
+    
+    return li
+  }
+
+  function onFormSubmitHandler(e) {
+    e.preventDefault();
+    const titleValue = inputTitle.value;
+    const bodyValue = inputBody.value;
+    if(!titleValue || !bodyValue) {
+      alert('Empty feilds provided')
+      return
+    }
+    
+    const task = crateNewTask(titleValue, bodyValue)
+    const listItem =  listItemTemplate(task)
+    listContainer.insertAdjacentElement('afterbegin',
+    listItem
+    )
+    form.reset();
+
+  }    
+  function crateNewTask(title, body) {
+      const newTask ={
+        title,
+        body,
+        completed: false,
+        _id: `task-${Math.random()} `
+      }
+      // console.log(newTask);
+      objOfTasks[newTask._id] = newTask;
+
+      return{ ...newTask}
+  }
 })(tasks);
