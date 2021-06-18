@@ -53,8 +53,9 @@ const tasks = [
   // Events
   form.addEventListener('submit', onFormSubmitHandler )
   renderAllTasks(objOfTasks)
+  listContainer.addEventListener('click',oneDeleteHendler)
 
- 
+  
   function renderAllTasks(taskList) {
     if (!taskList) {
       console.error("Передайте список");
@@ -79,6 +80,7 @@ const tasks = [
       'flex-wrap',
       'mt-2'
     )
+    li.setAttribute('data-task-id', _id);
     // console.log(li);
     const span = document.createElement("span")
     span.textContent = title
@@ -135,4 +137,42 @@ const tasks = [
 
       return{ ...newTask}
   }
+
+  function deleteTask(id) {
+    const {title} =  objOfTasks[id]
+    const isConfirm = confirm(`Are you sure that you want to delete ${title}  ? `)
+    if (!isConfirm) return isConfirm;
+    delete objOfTasks[id]
+    return isConfirm;
+  }
+
+  function deleteTaskFromHTML(confirmed, el) {
+    if (!confirmed) return
+    el.remove()
+  }
+
+  function oneDeleteHendler(e) {
+      if (e.target.classList.contains('delete-btn')) {
+        const perent = e.target.closest('[data-task-id]') 
+        const id = perent.dataset.taskId
+        const confirmed = deleteTask(id)
+        deleteTaskFromHTML(confirmed, perent)
+
+        
+        
+        
+        
+        
+        
+        
+        // const isConfirm = confirm('Are you sure that you want to delete  ? ')
+        // if (isConfirm) {
+        // }
+
+      }
+  }
+
+
+
+
 })(tasks);
